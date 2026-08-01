@@ -231,7 +231,83 @@
     <path d="M12 19V5"/><path d="M6 11l6-6 6 6"/>
   </svg>
 </button>
+<!-- زر مشاركة المقال -->
+<button id="share-post-button" onclick="sharePostUrl('ما هو جامعيون')"
+    class="flex items-center space-x-2 space-x-reverse text-accent-color hover:text-primary-color transition-colors duration-200 font-semibold text-base p-2 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M18 16c-.73 0-1.4-.24-1.93-.65l-7.39 3.49a2.986 2.986 0 010-6.68l7.39 3.49c.53-.41 1.2-.65 1.93-.65 1.65 0 3 1.35 3 3s-1.35 3-3 3zm0-10c-1.65 0-3 1.35-3 3s1.35 3 3 3 3-1.35 3-3-1.35-3-3-3zM6 15c-1.65 0-3 1.35-3 3s1.35 3 3 3 3-1.35 3-3-1.35-3-3-3z" />
+    </svg>
+    <span>مشاركة المقال</span>
+</button>
 
+<!-- حاوية ونظام تعليقات Disqus -->
+<div id="disqus_thread"></div>
+<script>
+    (function() {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://jamaiyoon.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+<!-- دوال التفاعل (المشاركة ونسخ الرابط) -->
+<script>
+    function showMessageBox(message, type = 'info') {
+        const messageBox = document.getElementById('message-box');
+        if (!messageBox) return;
+        let colorClass = 'bg-gray-700';
+        if (type === 'success') colorClass = 'bg-green-600';
+        if (type === 'error') colorClass = 'bg-red-600';
+        if (type === 'info') colorClass = 'bg-blue-600';
+        messageBox.textContent = message;
+        messageBox.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 p-3 rounded-xl text-white shadow-2xl transition-all duration-300 z-[1001] ${colorClass} opacity-100 scale-100`;
+        setTimeout(() => {
+            messageBox.classList.remove('opacity-100', 'scale-100');
+            messageBox.classList.add('opacity-0', 'scale-90');
+        }, 3000);
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showMessageBox('تم نسخ رابط التدوينة إلى الحافظة!', 'success');
+        }, () => {
+            try {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.left = '-9999px';
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showMessageBox('تم نسخ رابط التدوينة إلى الحافظة!', 'success');
+            } catch (e) {
+                showMessageBox('فشل النسخ. الرجاء النسخ يدوياً.', 'error');
+            }
+        });
+    }
+
+    function sharePostUrl(title) {
+        const postUrl = window.location.href;
+
+        if (navigator.share) {
+            navigator.share({
+                title: title,
+                text: `اقرأ مقال: ${title} من مدونة جامعيون!`,
+                url: postUrl,
+            }).catch((error) => {
+                if (error.name !== 'AbortError') {
+                    copyToClipboard(postUrl);
+                }
+            });
+        } else {
+            copyToClipboard(postUrl);
+        }
+    }
+</script>
 <script>
 /* ============================================================
    للتعديل: بدّلي النص التالي برسالتك الخاصة قبل الإرسال.
